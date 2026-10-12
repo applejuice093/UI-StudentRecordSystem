@@ -172,6 +172,17 @@ public class SaveDetailForm extends javax.swing.JFrame {
         return;
     }
 
+    String error = firstError(
+            Validation.validateRegNo(regNo),
+            Validation.validateFullName(fullName),
+            Validation.validateYear(year),
+            Validation.validateSemester(semester),
+            Validation.validateCgpa(cgpa));
+    if (error != null) {
+        JOptionPane.showMessageDialog(this, error);
+        return;
+    }
+
     String sql = "INSERT INTO students (reg_no, full_name, current_year, current_semester, cgpa) VALUES (?, ?, ?, ?, ?)";
 
     try (Connection conn = DBConnection.getConnection();
@@ -202,6 +213,15 @@ public class SaveDetailForm extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Year, Semester, and CGPA must be numeric values.");
     }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private static String firstError(String... errors) {
+        for (String e : errors) {
+            if (e != null) {
+                return e;
+            }
+        }
+        return null;
+    }
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
