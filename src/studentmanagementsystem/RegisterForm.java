@@ -136,6 +136,8 @@ try (Connection conn = DBConnection.getConnection();
         JOptionPane.showMessageDialog(this, "Registration Failed");
     }
 
+} catch (java.sql.SQLIntegrityConstraintViolationException ex) {
+    JOptionPane.showMessageDialog(this, "That username is already taken. Please choose another.");
 } catch (SQLException ex) {
     JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
 }

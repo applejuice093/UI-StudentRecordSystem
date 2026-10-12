@@ -207,6 +207,8 @@ public class SaveDetailForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Failed to save student details.");
         }
 
+    } catch (java.sql.SQLIntegrityConstraintViolationException ex) {
+        JOptionPane.showMessageDialog(this, "A student with Registration Number '" + regNo + "' already exists.");
     } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage());
     } catch (NumberFormatException ex) {
