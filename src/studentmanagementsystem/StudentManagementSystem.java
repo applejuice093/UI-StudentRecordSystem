@@ -1,21 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package studentmanagementsystem;
 
 /**
- *
- * @author anike
+ * Application entry point: opens the login window.
  */
 public class StudentManagementSystem {
 
     /**
-     * @param args the command line arguments
+     * @param args the command line arguments (unused)
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        new LoginForm().setVisible(true);
+        // Swing components must be created on the Event Dispatch Thread.
+        java.awt.EventQueue.invokeLater(() -> new LoginForm().setVisible(true));
     }
-    
 }

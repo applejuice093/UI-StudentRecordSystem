@@ -108,6 +108,15 @@ if (username.isEmpty() || password.isEmpty()) {
     return;
 }
 
+String error = Validation.validateUsername(username);
+if (error == null) {
+    error = Validation.validatePassword(password);
+}
+if (error != null) {
+    JOptionPane.showMessageDialog(this, error);
+    return;
+}
+
 String sql = "INSERT INTO users(username, password) VALUES(?, ?)";
 
 try (Connection conn = DBConnection.getConnection();
@@ -127,6 +136,8 @@ try (Connection conn = DBConnection.getConnection();
         JOptionPane.showMessageDialog(this, "Registration Failed");
     }
 
+} catch (java.sql.SQLIntegrityConstraintViolationException ex) {
+    JOptionPane.showMessageDialog(this, "That username is already taken. Please choose another.");
 } catch (SQLException ex) {
     JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
 }

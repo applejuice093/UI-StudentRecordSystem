@@ -209,6 +209,7 @@ public class ViewStudent extends javax.swing.JFrame {
             int year = rs.getInt("current_year");
             int sem = rs.getInt("current_semester");
             float cgpa = rs.getFloat("cgpa");
+            if (fullName == null) fullName = ""; // avoid NPE on NULL names
 
             // format row
             sb.append(String.format(rowFormat,

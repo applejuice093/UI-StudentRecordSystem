@@ -33,56 +33,67 @@ To develop a user-friendly desktop application
 
 ## 📂 Project Structure
 ```
-Project_Name/
-│
-├── src/
-│   ├── db/            # Database connection classes
-│   ├── ui/            # GUI forms (Swing)
-│   └── Main.java      # Main class
-│
-├── lib/               # MySQL JDBC connector
-└── README.md
+UI-StudentRecordSystem/
+├── src/studentmanagementsystem/
+│   ├── StudentManagementSystem.java  # Entry point (opens LoginForm)
+│   ├── DBConnection.java             # JDBC connection (settings from env vars)
+│   ├── Validation.java               # Input validation helpers
+│   ├── LoginForm / RegisterForm      # Account screens
+│   ├── Menu                          # Main menu
+│   ├── SaveDetailForm                # Add a student record
+│   └── ViewStudent                   # List / search student records
+├── test/studentmanagementsystem/     # Unit tests (no external deps)
+├── db/schema.sql                     # MySQL schema
+├── nbproject/, build.xml             # NetBeans / Ant project files
+└── Makefile                          # Build without NetBeans
 ```
 
 ## ⚙️ Software Requirements
 
-Windows / Linux / macOS
+- Java JDK 17 or newer
+- MySQL Server 8+
+- MySQL Connector/J
+- NetBeans IDE (optional – the Makefile works without it)
 
-Java JDK 8+
+## 🗄️ Database Setup
 
-NetBeans IDE
+```bash
+mysql -u root -p < db/schema.sql
+```
 
-MySQL Server
+Credentials are **not** stored in the code. Set them as environment variables
+before running the app (defaults shown):
 
-MySQL Connector/J
-
-## 🗄️ Database Configuration
-
-Create a MySQL database
-
-Create required tables
-
-Update database credentials in Java code:
-
-Database URL
-
-Username
-
-Password
+| Variable      | Default                                   |
+|---------------|-------------------------------------------|
+| `SRS_DB_URL`  | `jdbc:mysql://localhost:3306/studentdb`   |
+| `SRS_DB_USER` | `root`                                    |
+| `SRS_DB_PASS` | *(empty)*                                 |
 
 ## ▶️ How to Run the Project
 
-Open NetBeans IDE
+**From the command line**
 
-Click File → Open Project
+```bash
+export SRS_DB_PASS=your_mysql_password
+make test                                         # run unit tests
+make run MYSQL_JAR=/path/to/mysql-connector-j.jar # launch the GUI
+```
 
-Select the project folder
+**From NetBeans**: File → Open Project, add the MySQL Connector JAR to
+Libraries, set the environment variables, then Run.
 
-Add MySQL Connector JAR to Libraries
+## ✅ Input Validation
 
-Start MySQL Server
-
-Run the project
+| Field               | Rule                                        |
+|---------------------|---------------------------------------------|
+| Registration Number | letters, digits, `-`; up to 20 chars        |
+| Full Name           | 2–100 letters/spaces/`.`/`'`/`-`            |
+| Year                | whole number 1–5                            |
+| Semester            | whole number 1–10                           |
+| CGPA                | 0.0–10.0                                    |
+| Username            | 3–30 letters, digits, `_`, `.`              |
+| Password            | at least 6 characters                       |
 
 ## 🖥️ User Interface
 
