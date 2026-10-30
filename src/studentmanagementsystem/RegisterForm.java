@@ -123,7 +123,8 @@ try (Connection conn = DBConnection.getConnection();
      PreparedStatement pst = conn.prepareStatement(sql)) {
 
     pst.setString(1, username);
-    pst.setString(2, password);
+    // Never store the plain-text password: save a salted PBKDF2 hash instead.
+    pst.setString(2, PasswordHasher.hash(password));
 
     int rows = pst.executeUpdate();
 
