@@ -161,62 +161,37 @@ public class ViewStudent extends javax.swing.JFrame {
     }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        // Look up a single student by registration number.
         String regNo = jTextField1.getText().trim();
-
-    if (regNo.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please enter a Registration Number.");
-        return;
-    }
-
-    jTextArea1.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 12));
-    jTextArea1.setEditable(false);
-
-    StringBuilder sb = new StringBuilder();
-    String rowFormat = "%-18s %-30s %6s %8s %6s%n";
-
-    String header = String.format(rowFormat, "Reg No", "Full Name", "Year", "Semester", "CGPA");
-    String line   = String.format(rowFormat, "------------------", "------------------------------", "----", "--------", "----");
-
-    sb.append(header);
-    sb.append(line);
-
-    String sql = "SELECT * FROM students WHERE reg_no = ?";
-
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement pst = conn.prepareStatement(sql)) {
-
-        pst.setString(1, regNo);
-        ResultSet rs = pst.executeQuery();
-
-        if (rs.next()) {
-
-            String fullName = rs.getString("full_name");
-            int year = rs.getInt("current_year");
-            int sem = rs.getInt("current_semester");
-            float cgpa = rs.getFloat("cgpa");
-            if (fullName == null) fullName = ""; // avoid NPE on NULL names
-
-            // format row
-            sb.append(String.format(rowFormat,
-                    regNo,
-                    fullName.length() > 30 ? fullName.substring(0, 27) + "..." : fullName,
-                    year,
-                    sem,
-                    String.format("%.2f", cgpa)
-            ));
-
-            jTextArea1.setText(sb.toString());
-
-        } else {
-            JOptionPane.showMessageDialog(this, "No student found with this Registration Number.");
-            jTextArea1.setText(""); // Clear area when no match
+        if (regNo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a Registration Number.");
+            return;
+        }
+        String error = Validation.validateRegNo(regNo);
+        if (error != null) {
+            JOptionPane.showMessageDialog(this, error);
+            return;
         }
 
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
-    }
-        
+        prepareOutputArea();
+        String sql = "SELECT reg_no, full_name, current_year, current_semester, cgpa FROM students WHERE reg_no = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, regNo);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    StudentTableFormatter table = new StudentTableFormatter();
+                    addRow(table, rs);
+                    jTextArea1.setText(table.toString());
+                } else {
+                    JOptionPane.showMessageDialog(this, "No student found with this Registration Number.");
+                    jTextArea1.setText(""); // Clear area when no match
+                }
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
