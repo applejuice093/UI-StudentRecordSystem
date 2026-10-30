@@ -170,10 +170,6 @@ public class LoginForm extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jButton2ActionPerformed
     
-    private void jLable3(java.awt.event.ActionEvent evt){
-        new RegisterForm().setVisible(true);
-        this.dispose();
-    }
     /**
      * @param args the command line arguments
      */
