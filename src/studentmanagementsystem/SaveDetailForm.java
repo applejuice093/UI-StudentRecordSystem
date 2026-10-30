@@ -6,7 +6,6 @@ package studentmanagementsystem;
 import javax.swing.JOptionPane;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 /**
  *
@@ -192,7 +191,8 @@ public class SaveDetailForm extends javax.swing.JFrame {
         pst.setString(2, fullName);
         pst.setInt(3, Integer.parseInt(year));
         pst.setInt(4, Integer.parseInt(semester));
-        pst.setFloat(5, Float.parseFloat(cgpa));
+        // DECIMAL(4,2) column: send an exact decimal rather than a lossy float.
+        pst.setBigDecimal(5, new java.math.BigDecimal(cgpa));
 
         int rows = pst.executeUpdate();
 
