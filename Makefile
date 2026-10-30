@@ -11,7 +11,8 @@ SOURCES      := $(shell find $(SRC_DIR) -name '*.java')
 TEST_SOURCES := $(shell find $(TEST_DIR) -name '*.java')
 TEST_CLASSES := studentmanagementsystem.ValidationTest \
                 studentmanagementsystem.PasswordHasherTest \
-                studentmanagementsystem.StudentTableFormatterTest
+                studentmanagementsystem.StudentTableFormatterTest \
+                studentmanagementsystem.DBConnectionTest
 
 .PHONY: all build test run clean
 

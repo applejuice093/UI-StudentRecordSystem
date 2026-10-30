@@ -27,9 +27,22 @@ public class DBConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(
-                setting("SRS_DB_URL", DEFAULT_URL),
-                setting("SRS_DB_USER", DEFAULT_USER),
-                setting("SRS_DB_PASS", ""));
+        String url = setting("SRS_DB_URL", DEFAULT_URL);
+        try {
+            return DriverManager.getConnection(
+                    url,
+                    setting("SRS_DB_USER", DEFAULT_USER),
+                    setting("SRS_DB_PASS", ""));
+        } catch (SQLException ex) {
+            // "No suitable driver" almost always means Connector/J is missing from
+            // the classpath; say so instead of surfacing the cryptic JDBC message.
+            if ("08001".equals(ex.getSQLState()) && ex.getMessage() != null
+                    && ex.getMessage().startsWith("No suitable driver")) {
+                throw new SQLException("MySQL JDBC driver not found for " + url
+                        + ". Add mysql-connector-j to the classpath (make run MYSQL_JAR=...).",
+                        ex.getSQLState(), ex);
+            }
+            throw ex;
+        }
     }
 }
