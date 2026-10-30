@@ -112,33 +112,52 @@ public class LoginForm extends javax.swing.JFrame {
             return;
         }
 
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pst = conn.prepareStatement(sql)) {
-
-            pst.setString(1, username);
-            pst.setString(2, password);
-
-            ResultSet rs = pst.executeQuery();
-
-            if (rs.next()) {
+        try (Connection conn = DBConnection.getConnection()) {
+            if (authenticate(conn, username, password)) {
                 JOptionPane.showMessageDialog(this, "Login Successful!");
-
-                
                 Menu df = new Menu();
                 df.setVisible(true);
-
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid username or password.");
             }
-
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage());
         }
-
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    /**
+     * Looks the user up by name and checks the password against the stored
+     * PBKDF2 hash. Accounts created before hashing was introduced still hold a
+     * plain-text password; on their next successful login that value is
+     * replaced with a hash so it is no longer stored in the clear.
+     */
+    private static boolean authenticate(Connection conn, String username, String password) throws SQLException {
+        String stored;
+        try (PreparedStatement pst = conn.prepareStatement("SELECT password FROM users WHERE username = ?")) {
+            pst.setString(1, username);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (!rs.next()) {
+                    return false;
+                }
+                stored = rs.getString("password");
+            }
+        }
+        if (PasswordHasher.isHashed(stored)) {
+            return PasswordHasher.verify(password, stored);
+        }
+        boolean legacyMatch = stored != null && java.security.MessageDigest.isEqual(
+                stored.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                password.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        if (legacyMatch) {
+            try (PreparedStatement up = conn.prepareStatement("UPDATE users SET password = ? WHERE username = ?")) {
+                up.setString(1, PasswordHasher.hash(password));
+                up.setString(2, username);
+                up.executeUpdate();
+            }
+        }
+        return legacyMatch;
+    }
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
         new RegisterForm().setVisible(true);
@@ -151,10 +170,6 @@ public class LoginForm extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jButton2ActionPerformed
     
-    private void jLable3(java.awt.event.ActionEvent evt){
-        new RegisterForm().setVisible(true);
-        this.dispose();
-    }
     /**
      * @param args the command line arguments
      */

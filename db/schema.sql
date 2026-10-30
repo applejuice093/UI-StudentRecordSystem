@@ -8,7 +8,7 @@ USE studentdb;
 CREATE TABLE IF NOT EXISTS users (
     id       INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(30)  NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL  -- PBKDF2 hash (see PasswordHasher), never plain text
 );
 
 -- Student records (used by SaveDetailForm / ViewStudent)
