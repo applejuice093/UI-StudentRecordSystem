@@ -59,7 +59,7 @@ public class ValidationTest {
         expectInvalid("password short", Validation.validatePassword("12345"));
         expectInvalid("password empty", Validation.validatePassword(""));
 
-        System.out.println(passed + " passed, " + failures + " failed");
+        System.out.println("ValidationTest: " + passed + " passed, " + failures + " failed");
         if (failures > 0) {
             System.exit(1);
         }
