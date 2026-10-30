@@ -51,13 +51,14 @@ public final class Validation {
         if (cgpa == null || cgpa.isBlank()) {
             return "CGPA is required.";
         }
-        double value;
-        try {
-            value = Double.parseDouble(cgpa.trim());
-        } catch (NumberFormatException ex) {
-            return "CGPA must be a number.";
+        String trimmed = cgpa.trim();
+        // Plain decimals only (max 2 decimal places, matching DECIMAL(4,2)).
+        // Double.parseDouble alone would also accept "1e1", "0x1p3", "9.5d" or "NaN".
+        if (!trimmed.matches("\\d{1,2}(\\.\\d{1,2})?")) {
+            return "CGPA must be a number like 8 or 8.75 (at most 2 decimal places).";
         }
-        if (Double.isNaN(value) || value < MIN_CGPA || value > MAX_CGPA) {
+        double value = Double.parseDouble(trimmed);
+        if (value < MIN_CGPA || value > MAX_CGPA) {
             return "CGPA must be between " + MIN_CGPA + " and " + MAX_CGPA + ".";
         }
         return null;

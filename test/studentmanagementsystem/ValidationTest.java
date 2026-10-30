@@ -46,6 +46,11 @@ public class ValidationTest {
         expectInvalid("cgpa negative", Validation.validateCgpa("-1"));
         expectInvalid("cgpa NaN", Validation.validateCgpa("NaN"));
         expectInvalid("cgpa text", Validation.validateCgpa("abc"));
+        expectInvalid("cgpa exponent", Validation.validateCgpa("1e0"));
+        expectInvalid("cgpa hex float", Validation.validateCgpa("0x1p3"));
+        expectInvalid("cgpa double suffix", Validation.validateCgpa("9.5d"));
+        expectInvalid("cgpa 3 decimals", Validation.validateCgpa("9.755"));
+        expectValid("cgpa padded", Validation.validateCgpa(" 7.5 "));
 
         expectValid("username", Validation.validateUsername("aniket_12"));
         expectInvalid("username short", Validation.validateUsername("ab"));
