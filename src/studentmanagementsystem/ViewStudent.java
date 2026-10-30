@@ -129,50 +129,36 @@ public class ViewStudent extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        jTextArea1.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 12));
-    jTextArea1.setEditable(false);
+        // Show every student, sorted by registration number.
+        prepareOutputArea();
+        StudentTableFormatter table = new StudentTableFormatter();
+        String sql = "SELECT reg_no, full_name, current_year, current_semester, cgpa FROM students ORDER BY reg_no";
 
-    StringBuilder sb = new StringBuilder();
-    String rowFormat = "%-18s %-30s %6s %8s %6s%n"; // adjust column widths if needed
-
-    // header
-    sb.append(String.format(rowFormat, "Reg No", "Full Name", "Year", "Semester", "CGPA"));
-    sb.append(String.format(rowFormat, "------------------", "------------------------------", "----", "--------", "----"));
-
-    String sql = "SELECT reg_no, full_name, current_year, current_semester, cgpa FROM students ORDER BY reg_no";
-
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement pst = conn.prepareStatement(sql);
-         ResultSet rs = pst.executeQuery()) {
-
-        while (rs.next()) {
-            String regNo = rs.getString("reg_no");
-            String fullName = rs.getString("full_name");
-            int year = rs.getInt("current_year");
-            int sem = rs.getInt("current_semester");
-            float cgpa = rs.getFloat("cgpa");
-
-            // trim long names so alignment stays intact
-            if (regNo == null) regNo = "";
-            if (fullName == null) fullName = "";
-            if (fullName.length() > 30) fullName = fullName.substring(0, 27) + "...";
-
-            sb.append(String.format(rowFormat,
-                    regNo,
-                    fullName,
-                    year,
-                    sem,
-                    String.format("%.2f", cgpa)
-            ));
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql);
+             ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+                addRow(table, rs);
+            }
+            jTextArea1.setText(table.toString());
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
         }
-
-        jTextArea1.setText(sb.toString());
-
-    } catch (SQLException ex) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
-    }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void prepareOutputArea() {
+        jTextArea1.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 12));
+        jTextArea1.setEditable(false);
+    }
+
+    /** Copies the current result-set row into the table (CGPA read as an exact decimal). */
+    private static void addRow(StudentTableFormatter table, ResultSet rs) throws SQLException {
+        table.addRow(rs.getString("reg_no"),
+                rs.getString("full_name"),
+                rs.getInt("current_year"),
+                rs.getInt("current_semester"),
+                rs.getBigDecimal("cgpa"));
+    }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
