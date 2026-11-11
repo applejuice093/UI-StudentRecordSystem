@@ -125,7 +125,7 @@ public class ViewStudent extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+        // Intentionally empty: NetBeans-generated handler for pressing Enter in the field.
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -195,7 +195,7 @@ public class ViewStudent extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        // Back to the main menu.
         new Menu().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed

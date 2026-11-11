@@ -174,7 +174,7 @@ public class LoginForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        // Exit button: close the application.
         System.exit(0);
     }//GEN-LAST:event_jButton2ActionPerformed
     
