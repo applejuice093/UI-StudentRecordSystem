@@ -9,13 +9,15 @@ import java.sql.SQLException;
  *
  * Connection settings are read from environment variables so that no
  * credentials need to be stored in source control:
- *   SRS_DB_URL  (default: jdbc:mysql://localhost:3306/studentdb)
+ *   SRS_DB_URL  (default: jdbc:mysql://localhost:3306/studentdb?connectTimeout=5000)
  *   SRS_DB_USER (default: root)
  *   SRS_DB_PASS (default: empty)
  */
 public class DBConnection {
 
-    static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/studentdb";
+    // connectTimeout (ms) makes a stopped MySQL server fail fast with an error
+    // dialog instead of freezing the Swing window for the OS TCP timeout.
+    static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/studentdb?connectTimeout=5000";
     static final String DEFAULT_USER = "root";
 
     private DBConnection() {

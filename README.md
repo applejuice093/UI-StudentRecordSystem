@@ -68,7 +68,7 @@ before running the app (defaults shown):
 
 | Variable      | Default                                   |
 |---------------|-------------------------------------------|
-| `SRS_DB_URL`  | `jdbc:mysql://localhost:3306/studentdb`   |
+| `SRS_DB_URL`  | `jdbc:mysql://localhost:3306/studentdb?connectTimeout=5000` |
 | `SRS_DB_USER` | `root`                                    |
 | `SRS_DB_PASS` | *(empty)*                                 |
 
