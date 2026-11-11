@@ -104,7 +104,7 @@ public class LoginForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-           String username = jTextField1.getText().trim();
+        String username = jTextField1.getText().trim();
         String password = new String(jPasswordField1.getPassword());
 
         if (username.isEmpty() || password.isEmpty()) {
@@ -120,6 +120,9 @@ public class LoginForm extends javax.swing.JFrame {
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid username or password.");
+                // Don't leave the wrong password sitting in the field.
+                jPasswordField1.setText("");
+                jPasswordField1.requestFocusInWindow();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage());
@@ -133,6 +136,11 @@ public class LoginForm extends javax.swing.JFrame {
      * replaced with a hash so it is no longer stored in the clear.
      */
     private static boolean authenticate(Connection conn, String username, String password) throws SQLException {
+        // Registration never allows longer passwords, so skip the lookup (and
+        // an expensive PBKDF2 run on huge pasted input) for them.
+        if (password.length() > Validation.MAX_PASSWORD_LENGTH) {
+            return false;
+        }
         String stored;
         try (PreparedStatement pst = conn.prepareStatement("SELECT password FROM users WHERE username = ?")) {
             pst.setString(1, username);
