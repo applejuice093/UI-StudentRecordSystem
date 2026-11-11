@@ -15,6 +15,8 @@ public final class Validation {
     public static final double MIN_CGPA = 0.0;
     public static final double MAX_CGPA = 10.0;
     public static final int MIN_PASSWORD_LENGTH = 6;
+    /** Upper bound so a pasted megabyte of text can't stall PBKDF2 hashing. */
+    public static final int MAX_PASSWORD_LENGTH = 128;
 
     private Validation() {
     }
@@ -81,7 +83,30 @@ public final class Validation {
         if (password.length() < MIN_PASSWORD_LENGTH) {
             return "Password must be at least " + MIN_PASSWORD_LENGTH + " characters long.";
         }
+        if (password.length() > MAX_PASSWORD_LENGTH) {
+            return "Password must be at most " + MAX_PASSWORD_LENGTH + " characters long.";
+        }
+        if (password.isBlank()) {
+            return "Password cannot be only spaces.";
+        }
         return null;
+    }
+
+    /**
+     * Trims and upper-cases a registration number so "ra2311" and "RA2311"
+     * are stored and searched identically. Returns "" for null.
+     */
+    public static String normalizeRegNo(String regNo) {
+        return regNo == null ? "" : regNo.trim().toUpperCase(java.util.Locale.ROOT);
+    }
+
+    /**
+     * Collapses runs of whitespace (including tabs) inside a full name to a
+     * single space and trims the ends, so "Aniket   Mahto" is stored and
+     * listed the same way as "Aniket Mahto". Returns "" for null.
+     */
+    public static String normalizeFullName(String name) {
+        return name == null ? "" : name.trim().replaceAll("\\s+", " ");
     }
 
     private static String validateIntRange(String raw, String label, int min, int max) {

@@ -148,19 +148,19 @@ public class SaveDetailForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        // Back to the main menu.
         new Menu().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+        // Intentionally empty: NetBeans-generated handler for pressing Enter in the field.
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    String regNo = jTextField1.getText().trim();
-    String fullName = jTextField2.getText().trim();
+        // Validate every field, then insert the student with a prepared statement.
+    String regNo = Validation.normalizeRegNo(jTextField1.getText());
+    String fullName = Validation.normalizeFullName(jTextField2.getText());
     String year = jTextField3.getText().trim();
     String semester = jTextField4.getText().trim();
     String cgpa = jTextField5.getText().trim();
@@ -226,11 +226,11 @@ public class SaveDetailForm extends javax.swing.JFrame {
     }
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
-        // TODO add your handling code here:
+        // Intentionally empty: NetBeans-generated handler for pressing Enter in the field.
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
-        // TODO add your handling code here:
+        // Intentionally empty: NetBeans-generated handler for pressing Enter in the field.
     }//GEN-LAST:event_jTextField4ActionPerformed
 
     /**

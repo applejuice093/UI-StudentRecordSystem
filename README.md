@@ -46,6 +46,8 @@ UI-StudentRecordSystem/
 │   └── ViewStudent                   # List / search student records
 ├── test/studentmanagementsystem/     # Unit tests (no external deps)
 ├── db/schema.sql                     # MySQL schema
+├── db/sample_data.sql                # Optional demo students
+├── lib/                              # Put mysql-connector-j.jar here (git-ignored)
 ├── nbproject/, build.xml             # NetBeans / Ant project files
 └── Makefile                          # Build without NetBeans
 ```
@@ -61,14 +63,18 @@ UI-StudentRecordSystem/
 
 ```bash
 mysql -u root -p < db/schema.sql
+mysql -u root -p studentdb < db/sample_data.sql   # optional demo students
 ```
+
+Download MySQL Connector/J and save it as `lib/mysql-connector-j.jar`
+(see `lib/README.md`); the Makefile and the NetBeans project both use that path.
 
 Credentials are **not** stored in the code. Set them as environment variables
 before running the app (defaults shown):
 
 | Variable      | Default                                   |
 |---------------|-------------------------------------------|
-| `SRS_DB_URL`  | `jdbc:mysql://localhost:3306/studentdb`   |
+| `SRS_DB_URL`  | `jdbc:mysql://localhost:3306/studentdb?connectTimeout=5000` |
 | `SRS_DB_USER` | `root`                                    |
 | `SRS_DB_PASS` | *(empty)*                                 |
 
@@ -79,8 +85,14 @@ before running the app (defaults shown):
 ```bash
 export SRS_DB_PASS=your_mysql_password
 make test                                         # run unit tests
-make run MYSQL_JAR=/path/to/mysql-connector-j.jar # launch the GUI
+make run                                          # launch the GUI (uses lib/mysql-connector-j.jar)
+make run MYSQL_JAR=/path/to/mysql-connector-j.jar # ...or a jar elsewhere
+make jar                                          # build out/StudentRecordSystem.jar
+java -jar out/StudentRecordSystem.jar             # run it (finds lib/mysql-connector-j.jar)
 ```
+
+If MySQL is not running, the app reports a connection error after about
+5 seconds (`connectTimeout=5000` in the default URL) instead of freezing.
 
 **From NetBeans**: File → Open Project, add the MySQL Connector JAR to
 Libraries, set the environment variables, then Run.
@@ -100,13 +112,13 @@ plain-text rows without waiting for a login, delete them
 
 | Field               | Rule                                        |
 |---------------------|---------------------------------------------|
-| Registration Number | letters, digits, `-`; up to 20 chars        |
-| Full Name           | 2–100 letters/spaces/`.`/`'`/`-`            |
+| Registration Number | letters, digits, `-`; up to 20 chars; stored upper-case |
+| Full Name           | 2–100 letters/spaces/`.`/`'`/`-`; repeated spaces collapsed |
 | Year                | whole number 1–5                            |
 | Semester            | whole number 1–10                           |
 | CGPA                | 0–10, at most 2 decimal places (e.g. `8.75`) |
 | Username            | 3–30 letters, digits, `_`, `.`              |
-| Password            | at least 6 characters                       |
+| Password            | 6–128 characters, not only spaces           |
 
 ## 🖥️ User Interface
 
@@ -125,13 +137,13 @@ Simple and interactive layout
 
 ## 🧪 Testing
 
-`make test` compiles the project and runs the dependency-free unit tests
-(no database or GUI needed):
+`make test` compiles the project and runs every `*Test` class under `test/`
+(dependency-free, no database or GUI needed):
 
 - `ValidationTest`: form input rules
 - `PasswordHasherTest`: hashing, verification, malformed values
 - `StudentTableFormatterTest`: table layout and CGPA formatting
-- `DBConnectionTest`: env-var fallback and the missing-driver message
+- `DBConnectionTest`: env-var fallback, JDBC URL check and the missing-driver message
 
 The Swing forms and SQL itself are tested manually against a local MySQL.
 

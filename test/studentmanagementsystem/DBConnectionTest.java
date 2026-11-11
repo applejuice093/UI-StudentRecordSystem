@@ -29,6 +29,20 @@ public class DBConnectionTest {
         }
         check("connection fails without a driver", threw);
 
+        check("default URL is a JDBC URL", DBConnection.DEFAULT_URL.startsWith("jdbc:mysql://"));
+        try {
+            check("JDBC URL is trimmed", DBConnection.checkUrl("  jdbc:mysql://db:3306/x ").equals("jdbc:mysql://db:3306/x"));
+        } catch (SQLException ex) {
+            check("valid JDBC URL accepted: " + ex.getMessage(), false);
+        }
+        boolean rejected = false;
+        try {
+            DBConnection.checkUrl("localhost:3306/studentdb");
+        } catch (SQLException ex) {
+            rejected = ex.getMessage().contains("must be a JDBC URL");
+        }
+        check("non-JDBC URL rejected with a clear message", rejected);
+
         System.out.println("DBConnectionTest: " + passed + " passed, " + failures + " failed");
         if (failures > 0) {
             System.exit(1);

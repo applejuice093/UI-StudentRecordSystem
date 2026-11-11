@@ -9,12 +9,10 @@ MYSQL_JAR ?= lib/mysql-connector-j.jar
 
 SOURCES      := $(shell find $(SRC_DIR) -name '*.java')
 TEST_SOURCES := $(shell find $(TEST_DIR) -name '*.java')
-TEST_CLASSES := studentmanagementsystem.ValidationTest \
-                studentmanagementsystem.PasswordHasherTest \
-                studentmanagementsystem.StudentTableFormatterTest \
-                studentmanagementsystem.DBConnectionTest
+# Every test/**/*Test.java is run, so new test classes need no Makefile edit.
+TEST_CLASSES := $(subst /,.,$(patsubst $(TEST_DIR)/%.java,%,$(filter %Test.java,$(TEST_SOURCES))))
 
-.PHONY: all build test run clean
+.PHONY: all build test run jar clean
 
 all: build
 
@@ -30,6 +28,13 @@ test: build
 
 run: build
 	java -cp $(OUT_DIR)/classes:$(MYSQL_JAR) $(MAIN)
+
+# Runnable jar: out/StudentRecordSystem.jar. Connector/J is not bundled; the
+# manifest points at lib/mysql-connector-j.jar next to the jar's folder, so
+# `java -jar out/StudentRecordSystem.jar` works once that file is in place.
+jar: build
+	printf 'Main-Class: $(MAIN)\nClass-Path: $(if $(filter /%,$(MYSQL_JAR)),$(MYSQL_JAR),../$(MYSQL_JAR))\n' > $(OUT_DIR)/MANIFEST.MF
+	jar cfm $(OUT_DIR)/StudentRecordSystem.jar $(OUT_DIR)/MANIFEST.MF -C $(OUT_DIR)/classes .
 
 clean:
 	rm -rf $(OUT_DIR)

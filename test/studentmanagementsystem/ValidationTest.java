@@ -16,6 +16,10 @@ public class ValidationTest {
         if (result != null) { passed++; } else { failures++; System.err.println("FAIL (expected invalid): " + what); }
     }
 
+    private static void expectEqual(String what, String expected, String actual) {
+        if (expected.equals(actual)) { passed++; } else { failures++; System.err.println("FAIL: " + what + " -> expected '" + expected + "' but got '" + actual + "'"); }
+    }
+
     public static void main(String[] args) {
         expectValid("regNo RA2311", Validation.validateRegNo("RA2311"));
         expectValid("regNo with dash", Validation.validateRegNo("21-CS-007"));
@@ -58,6 +62,17 @@ public class ValidationTest {
         expectValid("password", Validation.validatePassword("secret1"));
         expectInvalid("password short", Validation.validatePassword("12345"));
         expectInvalid("password empty", Validation.validatePassword(""));
+        expectInvalid("password only spaces", Validation.validatePassword("        "));
+        expectInvalid("password too long", Validation.validatePassword("x".repeat(129)));
+        expectValid("password max length", Validation.validatePassword("x".repeat(128)));
+        expectValid("password with inner space", Validation.validatePassword("correct horse"));
+
+        expectEqual("regNo upper-cased", "RA2311-CS", Validation.normalizeRegNo(" ra2311-cs "));
+        expectEqual("regNo null normalized", "", Validation.normalizeRegNo(null));
+        expectEqual("regNo locale-independent", "TITLE", Validation.normalizeRegNo("title"));
+        expectEqual("name inner spaces collapsed", "Aniket Mahto", Validation.normalizeFullName("  Aniket \t  Mahto "));
+        expectEqual("name null normalized", "", Validation.normalizeFullName(null));
+        expectValid("normalized name valid", Validation.validateFullName(Validation.normalizeFullName("Mary   Ann")));
 
         System.out.println("ValidationTest: " + passed + " passed, " + failures + " failed");
         if (failures > 0) {

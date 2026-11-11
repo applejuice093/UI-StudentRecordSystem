@@ -94,23 +94,20 @@ public class Menu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        ViewStudent df = new ViewStudent();
-                df.setVisible(true);
-                this.dispose();
+        // "View Students": open the list/search screen.
+        new ViewStudent().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-                SaveDetailForm df = new SaveDetailForm();
-                df.setVisible(true);
-                this.dispose();
+        // "Save Student": open the add-student form.
+        new SaveDetailForm().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        LoginForm df = new LoginForm();
-        df.setVisible(true);
+        // "Logout": return to the login screen.
+        new LoginForm().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 
