@@ -85,6 +85,14 @@ public final class Validation {
     }
 
     /**
+     * Trims and upper-cases a registration number so "ra2311" and "RA2311"
+     * are stored and searched identically. Returns "" for null.
+     */
+    public static String normalizeRegNo(String regNo) {
+        return regNo == null ? "" : regNo.trim().toUpperCase(java.util.Locale.ROOT);
+    }
+
+    /**
      * Collapses runs of whitespace (including tabs) inside a full name to a
      * single space and trims the ends, so "Aniket   Mahto" is stored and
      * listed the same way as "Aniket Mahto". Returns "" for null.

@@ -162,7 +162,7 @@ public class ViewStudent extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Look up a single student by registration number.
-        String regNo = jTextField1.getText().trim();
+        String regNo = Validation.normalizeRegNo(jTextField1.getText());
         if (regNo.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a Registration Number.");
             return;

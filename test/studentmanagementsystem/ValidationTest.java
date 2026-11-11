@@ -63,6 +63,9 @@ public class ValidationTest {
         expectInvalid("password short", Validation.validatePassword("12345"));
         expectInvalid("password empty", Validation.validatePassword(""));
 
+        expectEqual("regNo upper-cased", "RA2311-CS", Validation.normalizeRegNo(" ra2311-cs "));
+        expectEqual("regNo null normalized", "", Validation.normalizeRegNo(null));
+        expectEqual("regNo locale-independent", "TITLE", Validation.normalizeRegNo("title"));
         expectEqual("name inner spaces collapsed", "Aniket Mahto", Validation.normalizeFullName("  Aniket \t  Mahto "));
         expectEqual("name null normalized", "", Validation.normalizeFullName(null));
         expectValid("normalized name valid", Validation.validateFullName(Validation.normalizeFullName("Mary   Ann")));
