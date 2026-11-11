@@ -15,6 +15,8 @@ public final class Validation {
     public static final double MIN_CGPA = 0.0;
     public static final double MAX_CGPA = 10.0;
     public static final int MIN_PASSWORD_LENGTH = 6;
+    /** Upper bound so a pasted megabyte of text can't stall PBKDF2 hashing. */
+    public static final int MAX_PASSWORD_LENGTH = 128;
 
     private Validation() {
     }
@@ -80,6 +82,12 @@ public final class Validation {
         }
         if (password.length() < MIN_PASSWORD_LENGTH) {
             return "Password must be at least " + MIN_PASSWORD_LENGTH + " characters long.";
+        }
+        if (password.length() > MAX_PASSWORD_LENGTH) {
+            return "Password must be at most " + MAX_PASSWORD_LENGTH + " characters long.";
+        }
+        if (password.isBlank()) {
+            return "Password cannot be only spaces.";
         }
         return null;
     }

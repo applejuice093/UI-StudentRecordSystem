@@ -62,6 +62,10 @@ public class ValidationTest {
         expectValid("password", Validation.validatePassword("secret1"));
         expectInvalid("password short", Validation.validatePassword("12345"));
         expectInvalid("password empty", Validation.validatePassword(""));
+        expectInvalid("password only spaces", Validation.validatePassword("        "));
+        expectInvalid("password too long", Validation.validatePassword("x".repeat(129)));
+        expectValid("password max length", Validation.validatePassword("x".repeat(128)));
+        expectValid("password with inner space", Validation.validatePassword("correct horse"));
 
         expectEqual("regNo upper-cased", "RA2311-CS", Validation.normalizeRegNo(" ra2311-cs "));
         expectEqual("regNo null normalized", "", Validation.normalizeRegNo(null));
