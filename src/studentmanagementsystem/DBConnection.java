@@ -26,8 +26,22 @@ public class DBConnection {
         return (value == null || value.isBlank()) ? fallback : value;
     }
 
+    /**
+     * Returns the trimmed URL, or throws when it is not a JDBC URL. A common
+     * mistake is SRS_DB_URL=localhost:3306/studentdb; say what is expected
+     * instead of surfacing the generic "No suitable driver" error.
+     */
+    static String checkUrl(String url) throws SQLException {
+        String trimmed = url == null ? "" : url.trim();
+        if (!trimmed.startsWith("jdbc:")) {
+            throw new SQLException("SRS_DB_URL must be a JDBC URL such as " + DEFAULT_URL
+                    + " (got '" + trimmed + "').", "08001");
+        }
+        return trimmed;
+    }
+
     public static Connection getConnection() throws SQLException {
-        String url = setting("SRS_DB_URL", DEFAULT_URL);
+        String url = checkUrl(setting("SRS_DB_URL", DEFAULT_URL));
         try {
             return DriverManager.getConnection(
                     url,
