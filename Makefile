@@ -9,10 +9,8 @@ MYSQL_JAR ?= lib/mysql-connector-j.jar
 
 SOURCES      := $(shell find $(SRC_DIR) -name '*.java')
 TEST_SOURCES := $(shell find $(TEST_DIR) -name '*.java')
-TEST_CLASSES := studentmanagementsystem.ValidationTest \
-                studentmanagementsystem.PasswordHasherTest \
-                studentmanagementsystem.StudentTableFormatterTest \
-                studentmanagementsystem.DBConnectionTest
+# Every test/**/*Test.java is run, so new test classes need no Makefile edit.
+TEST_CLASSES := $(subst /,.,$(patsubst $(TEST_DIR)/%.java,%,$(filter %Test.java,$(TEST_SOURCES))))
 
 .PHONY: all build test run clean
 
