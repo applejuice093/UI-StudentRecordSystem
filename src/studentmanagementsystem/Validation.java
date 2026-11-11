@@ -84,6 +84,15 @@ public final class Validation {
         return null;
     }
 
+    /**
+     * Collapses runs of whitespace (including tabs) inside a full name to a
+     * single space and trims the ends, so "Aniket   Mahto" is stored and
+     * listed the same way as "Aniket Mahto". Returns "" for null.
+     */
+    public static String normalizeFullName(String name) {
+        return name == null ? "" : name.trim().replaceAll("\\s+", " ");
+    }
+
     private static String validateIntRange(String raw, String label, int min, int max) {
         if (raw == null || raw.isBlank()) {
             return label + " is required.";

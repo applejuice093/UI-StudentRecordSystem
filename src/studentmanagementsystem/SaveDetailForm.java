@@ -160,7 +160,7 @@ public class SaveDetailForm extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     String regNo = jTextField1.getText().trim();
-    String fullName = jTextField2.getText().trim();
+    String fullName = Validation.normalizeFullName(jTextField2.getText());
     String year = jTextField3.getText().trim();
     String semester = jTextField4.getText().trim();
     String cgpa = jTextField5.getText().trim();
