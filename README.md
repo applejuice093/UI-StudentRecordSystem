@@ -1,154 +1,78 @@
-# Java UI-Based Application Using MySQL
+# CoralCove
 
-## NetBeans Desktop Project
+CoralCove is an offline resort-group desk. One administrator can run several properties. Front desk, managers, and attendants stay on the resort they are assigned to. The same twelve screens cover stays, lodges, guests, arrivals, billing, lodge care, experiences, employees, inventory, and reports.
 
-## 📌 Project Description
+This repository used to be a single-hotel desk; the running product is CoralCove, a multi-resort desk.
 
-This project is a Java-based desktop application developed using NetBeans IDE.
-It provides a graphical user interface (GUI) built with Java Swing and uses MySQL as the backend database.
+## Stack
 
-The application lets a registered user log in, add student records and view or search them, using JDBC with prepared statements.
+- Java 17, Swing, programmatic layouts (no form files)
+- SQLite through the vendored JDBC driver
+- FlatLaf look and feel, with the system look and feel if FlatLaf fails
+- JFreeChart for the dashboard
+- JUnit 4 for rules, not for the windows
+- NetBeans Ant project (`build.xml`, `nbproject/`)
 
-## 🛠️ Technologies Used
+Runtime JARs live in `lib/` and are copied beside the application JAR as `dist/lib`.
 
-Java (JDK 17 or higher)
+## Layout
 
-Java Swing (GUI)
-
-MySQL Database
-
-JDBC (Java Database Connectivity)
-
-NetBeans IDE
-
-## 🎯 Objectives
-
-To understand Java GUI programming
-
-To connect Java application with MySQL database
-
-To insert and query records safely using JDBC prepared statements
-
-To develop a user-friendly desktop application
-
-## 📂 Project Structure
 ```
-UI-StudentRecordSystem/
-├── src/studentmanagementsystem/
-│   ├── StudentManagementSystem.java  # Entry point (opens LoginForm)
-│   ├── DBConnection.java             # JDBC connection (settings from env vars)
-│   ├── Validation.java               # Input validation helpers
-│   ├── PasswordHasher.java           # Salted PBKDF2 password hashing
-│   ├── StudentTableFormatter.java    # Text table used by ViewStudent
-│   ├── LoginForm / RegisterForm      # Account screens
-│   ├── Menu                          # Main menu
-│   ├── SaveDetailForm                # Add a student record
-│   └── ViewStudent                   # List / search student records
-├── test/studentmanagementsystem/     # Unit tests (no external deps)
-├── db/schema.sql                     # MySQL schema
-├── nbproject/, build.xml             # NetBeans / Ant project files
-└── Makefile                          # Build without NetBeans
+src/coralcove/          package coralcove, main class coralcove.Main
+test/coralcove/         JUnit tests
+lib/                    sqlite-jdbc, flatlaf, jfreechart, junit, hamcrest
+data/coralcove.db       created on first launch (not committed)
+dist/CoralCove.jar      built application
 ```
 
-## ⚙️ Software Requirements
+The database path is `data/coralcove.db`. Set `CORALCOVE_DB` to point somewhere else.
 
-- Java JDK 17 or newer
-- MySQL Server 8+
-- MySQL Connector/J
-- NetBeans IDE (optional – the Makefile works without it)
+## Sign in
 
-## 🗄️ Database Setup
+| Username | Password | Notes |
+| --- | --- | --- |
+| admin | Admin@123 | Group administrator. Must change the password on first sign-in. Can switch resorts, including All resorts. |
 
-```bash
-mysql -u root -p < db/schema.sql
+A fresh database seeds one real property, CoralCove Beach (Kochi, Malabar coast), plus lodge categories and an experience catalog for that property. Demonstration rows are not loaded until Settings asks for them.
+
+## Roles
+
+| Role | What they can open |
+| --- | --- |
+| ADMIN | Every screen, including Settings. `users.resort_id` is empty so they are not tied to one property. |
+| MANAGER | Every screen except Settings. Must belong to one resort. |
+| FRONT_DESK | Dashboard, stays, lodges (view only), guests, arrivals, billing, lodge care (view), experiences. |
+| ATTENDANT | Dashboard and lodge care. |
+
+A non-admin account that tries to change another resort's lodge, stay, employee, stock, or experience gets: `That record belongs to another resort.`
+
+## Build
+
+In NetBeans, open the folder and use **Clean and Build**. The main class is `coralcove.Main`. The IDE writes `dist/CoralCove.jar`.
+
+From a JDK 17 or newer install, with `jar` and `javac` on that JDK:
+
+```
+javac --release 17 -encoding UTF-8 -cp "lib\sqlite-jdbc-3.49.1.0.jar;lib\flatlaf-3.6.jar;lib\jfreechart-1.5.6.jar" -d build\classes @build\sources.txt
+jar --create --file dist\CoralCove.jar --manifest manifest.mf -C build\classes .
+java -jar dist\CoralCove.jar
 ```
 
-Credentials are **not** stored in the code. Set them as environment variables
-before running the app (defaults shown):
+`build\sources.txt` is one absolute path per Java file under `src`. Tests:
 
-| Variable      | Default                                   |
-|---------------|-------------------------------------------|
-| `SRS_DB_URL`  | `jdbc:mysql://localhost:3306/studentdb`   |
-| `SRS_DB_USER` | `root`                                    |
-| `SRS_DB_PASS` | *(empty)*                                 |
-
-## ▶️ How to Run the Project
-
-**From the command line**
-
-```bash
-export SRS_DB_PASS=your_mysql_password
-make test                                         # run unit tests
-make run MYSQL_JAR=/path/to/mysql-connector-j.jar # launch the GUI
+```
+java -cp "build\classes;build\test-classes;lib\sqlite-jdbc-3.49.1.0.jar;lib\junit-4.13.2.jar;lib\hamcrest-core-1.3.jar" org.junit.runner.JUnitCore coralcove.PasswordHasherTest coralcove.DatabaseInitializerTest coralcove.AuthenticationServiceTest coralcove.ResortRulesTest coralcove.DemoDataTest
 ```
 
-**From NetBeans**: File → Open Project, add the MySQL Connector JAR to
-Libraries, set the environment variables, then Run.
+## Documents
 
-## 🔐 Passwords
+- `USER_GUIDE.md` — how to use the desk
+- `DATABASE_SCHEMA.md` — tables, statuses, occupancy
+- `PROJECT_DOCUMENT.md` — architecture, threads, each Java file, and the ER diagram
 
-Login passwords are stored as salted PBKDF2-HMAC-SHA256 hashes
-(`pbkdf2$<iterations>$<salt>$<hash>`), never as plain text.
+## If something fails
 
-Accounts created with an older version of the app hold a plain-text
-password. They can still log in, and on that first successful login the
-stored value is replaced with a hash automatically. To clear old
-plain-text rows without waiting for a login, delete them
-(`DELETE FROM users WHERE password NOT LIKE 'pbkdf2$%';`) and re-register.
-
-## ✅ Input Validation
-
-| Field               | Rule                                        |
-|---------------------|---------------------------------------------|
-| Registration Number | letters, digits, `-`; up to 20 chars        |
-| Full Name           | 2–100 letters/spaces/`.`/`'`/`-`            |
-| Year                | whole number 1–5                            |
-| Semester            | whole number 1–10                           |
-| CGPA                | 0–10, at most 2 decimal places (e.g. `8.75`) |
-| Username            | 3–30 letters, digits, `_`, `.`              |
-| Password            | at least 6 characters                       |
-
-## 🖥️ User Interface
-
-Designed using Java Swing
-
-Created using NetBeans GUI Builder
-
-Simple and interactive layout
-
-## ✨ Features
-
-- Login and registration (hashed passwords)
-- Add a student record
-- View all students, or search one by registration number
-- Input validation and clear error messages (duplicate keys, missing JDBC driver)
-
-## 🧪 Testing
-
-`make test` compiles the project and runs the dependency-free unit tests
-(no database or GUI needed):
-
-- `ValidationTest`: form input rules
-- `PasswordHasherTest`: hashing, verification, malformed values
-- `StudentTableFormatterTest`: table layout and CGPA formatting
-- `DBConnectionTest`: env-var fallback and the missing-driver message
-
-The Swing forms and SQL itself are tested manually against a local MySQL.
-
-## 🚀 Future Enhancements
-
-Update and delete student records
-
-Improved UI using JavaFX
-
-Data export functionality
-
-Role-based access control
-
-## 👨‍💻 Developed By
-
-Aniket Mahto
-
-## 📄 License
-
-Released under the MIT License (see `LICENSE`). Built as an educational project.
+- **FlatLaf failed:** the app logs it in `data/coralcove.log` and continues with the system look and feel.
+- **Database is locked:** close the other CoralCove window that has the same file open.
+- **Password rejected:** `Admin@123` works only until it is changed. Delete `data/coralcove.db` only when you intend to drop every local record, then start again.
+- **Ambiguous column:** stay and lodge queries qualify `status` (`r.status`). A login that dies on `ambiguous column name: status` means a join selected `status` without a table name.
